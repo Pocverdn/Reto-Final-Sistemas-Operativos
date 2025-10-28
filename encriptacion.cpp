@@ -11,9 +11,9 @@
 using namespace std;
 
 
-void algoritmo_vigenere(const string& entrada, 
-                      const string& salida, 
-                      const string& clave, 
+void algoritmo_vigenere( string entrada, 
+                        string salida, 
+                        string clave, 
                       bool opcion) 
 
 {
@@ -22,61 +22,42 @@ void algoritmo_vigenere(const string& entrada,
         throw invalid_argument("La clave no puede estar vacía.");
     }
 
-    int in = open(entrada.c_str(), O_RDONLY);
-    if (in < 0) {
-        throw runtime_error("Error abriendo entrada: " + string(strerror(errno)));
-    }
+    int in = open(entrada.c_str(), O_RDONLY); // Archivo de entrada
 
-    int out = open(salida.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
-    if (out < 0) {
-        close(in);
-        throw runtime_error("Error abriendo salida: " + string(strerror(errno)));
-    }
+    int out = open(salida.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644); // Archivo de salida
 
-    const size_t BUFFER_SIZE = 4096;
+    int BUFFER_SIZE = 4096;
+    unsigned char buffer[BUFFER_SIZE]; // Creamos un buffer bien chimbita de 4096 bytes
 
-    unsigned char buffer[BUFFER_SIZE];
-
-    ssize_t indice = 0;
-    const ssize_t longitud = clave.length();
+    int indice = 0;
+    int longitud = clave.length();
     
-    ssize_t bytes;
+    int bytes;
 
-    while ((bytes = read(in, buffer, BUFFER_SIZE)) > 0) {
+    while ((bytes = read(in, buffer, BUFFER_SIZE)) > 0) { //Un While para que siga ejecutando siempre y cuando hayan bytes sin leer
         
-        for (ssize_t i = 0; i < bytes; ++i) {
+        for (int i = 0; i < bytes; ++i) {
             
-            unsigned char byte_clave = static_cast<unsigned char>(clave[indice]);
+            unsigned char byte_clave = static_cast<unsigned char>(clave[indice]); // convierte el valor a un numero entre 0 y 255
 
-            if (opcion) {
-                buffer[i] = (buffer[i] + byte_clave) % 256; // Modulo 255 para codificar en binario (En el original eran 26)
-            } else {
+            if (opcion) { // Encriptación
+                buffer[i] = (buffer[i] + byte_clave) % 256; // Modulo 256 para codificar en binario (En el original eran 26 ya que coficaba mensajes de A-Z)
+            } else { // Desemcriptación
                 buffer[i] = (buffer[i] - byte_clave + 256) % 256;
             }
 
             indice = (indice + 1) % longitud;
         }
 
-        ssize_t bytes_total = 0;
-        while (bytes_total < bytes) {
-            ssize_t bytes_escritos = write(out, 
-                                           buffer + bytes_total, 
-                                           bytes - bytes_total);
+        int bytes_total = 0;
+        while (bytes_total < bytes) { // Ciclo while que sirve para escribir la salida
             
-            if (bytes_escritos < 0) {
-                close(in);
-                close(out);
-                throw runtime_error("Error escribiendo en salida: " + string(strerror(errno)));
-            }
+            int bytes_escritos = write(out, buffer + bytes_total, bytes - bytes_total);
+            
             bytes_total += bytes_escritos;
         }
     }
 
-    if (bytes < 0) {
-        close(in);
-        close(out);
-        throw runtime_error("Error leyendo de entrada: " + string(strerror(errno)));
-    }
 
     close(in);
     close(out);
@@ -101,7 +82,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    const string clave = "MiClaveSuperSegura123!";
+    const string clave = "MaxiBoliviano123!";
     int opcion;
 
     do {
@@ -145,7 +126,7 @@ int main(int argc, char *argv[])
 
                 }    
             }
-        } catch (const std::exception& e) {
+        } catch (exception& e) {
             cerr << "\n*** ERROR: " << e.what() << " ***\n";
         }
     } while(opcion != 2);
