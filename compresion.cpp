@@ -4,7 +4,9 @@
 #include <algorithm>
 #include <queue>
 #include <unordered_map>
+#include <string>
 
+using namespace std;
 //Los nodos del arbol
 struct Node
 {
@@ -135,13 +137,13 @@ void buildHuffmanTree(string text)
 	while (index < (int)str.size() - 2) {
 		CompressDecode(root, index, str);
 	}
-
-    int main()
+}
+int main(int argc, char *argv[])
 {
-	string text = "Huffman coding is a data compression algorithm.";
 
-	buildHuffmanTree(text);
+	buildHuffmanTree(argv[1]);
 
 	return 0;
-}
+
+
 }
