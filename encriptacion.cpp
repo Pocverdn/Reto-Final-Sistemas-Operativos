@@ -22,21 +22,21 @@ void algoritmo_vigenere( string entrada,
         throw invalid_argument("La clave no puede estar vacía.");
     }
 
-    int in = open(entrada.c_str(), O_RDONLY); // Archivo de entrada
+    ssize_t in = open(entrada.c_str(), O_RDONLY); // Archivo de entrada
 
-    int out = open(salida.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644); // Archivo de salida
+    ssize_t out = open(salida.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644); // Archivo de salida
 
-    int BUFFER_SIZE = 4096;
+    int BUFFER_SIZE = 64000;
     unsigned char buffer[BUFFER_SIZE]; // Creamos un buffer bien chimbita de 4096 bytes
 
-    int indice = 0;
-    int longitud = clave.length();
+    ssize_t indice = 0;
+    ssize_t longitud = clave.length();
     
-    int bytes;
+    ssize_t bytes;
 
     while ((bytes = read(in, buffer, BUFFER_SIZE)) > 0) { //Un While para que siga ejecutando siempre y cuando hayan bytes sin leer
         
-        for (int i = 0; i < bytes; ++i) {
+        for (ssize_t i = 0; i < bytes; ++i) {
             
             unsigned char byte_clave = static_cast<unsigned char>(clave[indice]); // convierte el valor a un numero entre 0 y 255
 
@@ -49,10 +49,10 @@ void algoritmo_vigenere( string entrada,
             indice = (indice + 1) % longitud;
         }
 
-        int bytes_total = 0;
+        ssize_t bytes_total = 0;
         while (bytes_total < bytes) { // Ciclo while que sirve para escribir la salida
             
-            int bytes_escritos = write(out, buffer + bytes_total, bytes - bytes_total);
+            ssize_t bytes_escritos = write(out, buffer + bytes_total, bytes - bytes_total);
             
             bytes_total += bytes_escritos;
         }
@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    const string clave = "MaxiBoliviano123!";
+    const string clave = "ABC";
     int opcion;
 
     do {
