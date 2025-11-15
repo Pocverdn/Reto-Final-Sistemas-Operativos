@@ -65,71 +65,71 @@ void algoritmo_vigenere( string entrada,
 
 }
 
-void mostrarMenu() {
-    std::cout << "\n\n=== MENU PRINCIPAL ===";
-    std::cout << "\n0. Encriptar";
-    std::cout << "\n1. Desencriptar";
-    std::cout << "\n2. Salir del programa";
-    std::cout << "\nSeleccione una opcion: ";
-}
+// void mostrarMenu() {
+//     std::cout << "\n\n=== MENU PRINCIPAL ===";
+//     std::cout << "\n0. Encriptar";
+//     std::cout << "\n1. Desencriptar";
+//     std::cout << "\n2. Salir del programa";
+//     std::cout << "\nSeleccione una opcion: ";
+// }
 
-int main(int argc, char *argv[])
-{
+// int main(int argc, char *argv[])
+// {
 
-    if (argc < 3) {
-        cerr << "Error: Faltan argumentos." << endl;
-        cerr << "Uso: " << argv[0] << " <archivo_entrada> <archivo_salida>" << endl;
-        return 1;
-    }
+//     if (argc < 3) {
+//         cerr << "Error: Faltan argumentos." << endl;
+//         cerr << "Uso: " << argv[0] << " <archivo_entrada> <archivo_salida>" << endl;
+//         return 1;
+//     }
 
-    const string clave = "ABC";
-    int opcion;
+//     const string clave = "ABC";
+//     int opcion;
 
-    do {
-        mostrarMenu();
+//     do {
+//         mostrarMenu();
 
-        cin >> opcion;
+//         cin >> opcion;
 
 
-        try {
-            switch(opcion){
-                case 0: {
+//         try {
+//             switch(opcion){
+//                 case 0: {
 
-                    cout<< "Encriptando...\n";
+//                     cout<< "Encriptando...\n";
 
-                    algoritmo_vigenere(argv[1], argv[2], clave, true);
+//                     algoritmo_vigenere(argv[1], argv[2], clave, true);
 
-                    break;
+//                     break;
 
-                }
+//                 }
 
-                case 1: {
+//                 case 1: {
 
-                    cout<< "Desencriptando...\n";
+//                     cout<< "Desencriptando...\n";
 
-                    algoritmo_vigenere(argv[1], argv[2], clave, false);
-                    break;
+//                     algoritmo_vigenere(argv[1], argv[2], clave, false);
+//                     break;
 
-                }
+//                 }
 
-                case 2: {
+//                 case 2: {
 
-                    cout << "\nSaliendo...\n";
-                    break;
+//                     cout << "\nSaliendo...\n";
+//                     break;
 
-                }
+//                 }
 
-                default: {
+//                 default: {
 
-                    cout << "\nOpcion no valida, intenta de nuevo.\n";
-                    break;
+//                     cout << "\nOpcion no valida, intenta de nuevo.\n";
+//                     break;
 
-                }    
-            }
-        } catch (exception& e) {
-            cerr << "\n*** ERROR: " << e.what() << " ***\n";
-        }
-    } while(opcion != 2);
+//                 }    
+//             }
+//         } catch (exception& e) {
+//             cerr << "\n*** ERROR: " << e.what() << " ***\n";
+//         }
+//     } while(opcion != 2);
 
-    return 0;
-}
+//     return 0;
+// }
