@@ -65,7 +65,6 @@ char CompressDecode(Node* root, int &index, const string &str)
     if (root == nullptr)
         return '\0';
 
-    // If leaf → return character
     if (!root->left && !root->right)
         return root->ch;
 
@@ -79,13 +78,17 @@ char CompressDecode(Node* root, int &index, const string &str)
 
 void serializeTree(Node* root, ofstream &out) {
     if (!root) {
-        out << "# ";        // marker for NULL
+        out << "# ";
         return;
     }
-    out << root->ch << ":" << root->freq << " ";
+
+    unsigned int code = static_cast<unsigned char>(root->ch);
+
+    out << code << ":" << root->freq << " ";
     serializeTree(root->left, out);
     serializeTree(root->right, out);
 }
+
 Node* deserializeTree(ifstream &in) {
     string token;
     in >> token;
@@ -93,22 +96,24 @@ Node* deserializeTree(ifstream &in) {
     if (token == "#")
         return nullptr;
 
-    char ch;
-    int freq;
-
-    // Example token: A:12
     size_t pos = token.find(':');
-    ch = token[0];
-    freq = stoi(token.substr(pos + 1));
+
+    int code = stoi(token.substr(0, pos));
+    int freq = stoi(token.substr(pos + 1));
+
+    char ch = static_cast<char>(code);
 
     Node* node = new Node(ch, freq, nullptr, nullptr);
+
     node->left = deserializeTree(in);
     node->right = deserializeTree(in);
+
     return node;
 }
+
 void encodeHuffman(string inputFile, string encodedFile, string treeFile)
 {
-    // 1. Read input file
+    // leer archivo
     ifstream in(inputFile);
     if (!in.is_open()) {
         cout << "Error: cannot open input file\n";
@@ -119,18 +124,18 @@ void encodeHuffman(string inputFile, string encodedFile, string treeFile)
                  istreambuf_iterator<char>());
     in.close();
 
-    // 2. Count frequencies
+    // contar frequencia
     unordered_map<char, int> freq;
     for (char ch: text)
         freq[ch]++;
 
-    // 3. Priority queue
+    // cola
     priority_queue<Node*, vector<Node*>, comp> pq;
 
     for (auto &p : freq)
         pq.push(makeNode(p.first, p.second, nullptr, nullptr));
 
-    // 4. Build tree
+    // construir arbol
     while (pq.size() != 1) {
         Node *left = pq.top(); pq.pop();
         Node *right = pq.top(); pq.pop();
@@ -139,21 +144,21 @@ void encodeHuffman(string inputFile, string encodedFile, string treeFile)
 
     Node* root = pq.top();
 
-    // 5. Generate Huffman codes
+    // Generar codigos de huffman
     unordered_map<char, string> huffmanCode;
     CompressEncode(root, "", huffmanCode);
 
-    // 6. Encode text
+    // comprimir
     string encodedString = "";
     for (char ch : text)
         encodedString += huffmanCode[ch];
 
-    // 7. Save encoded text
+    // Salvar compression
     ofstream out(encodedFile);
     out << encodedString;
     out.close();
 
-    // 8. Save Huffman tree
+    // Salvar llave o arbol
     ofstream treeOut(treeFile);
     serializeTree(root, treeOut);
     treeOut.close();
@@ -164,7 +169,6 @@ void encodeHuffman(string inputFile, string encodedFile, string treeFile)
 }
 void decodeHuffman(string encodedFile, string treeFile, string outputFile)
 {
-    // 1. Load encoded file
     ifstream in(encodedFile);
     if (!in.is_open()) {
         cout << "Error: cannot open encoded file\n";
@@ -174,7 +178,6 @@ void decodeHuffman(string encodedFile, string treeFile, string outputFile)
                     istreambuf_iterator<char>());
     in.close();
 
-    // 2. Load tree
     ifstream tin(treeFile);
     if (!tin.is_open()) {
         cout << "Error: cannot open tree file\n";
@@ -184,14 +187,11 @@ void decodeHuffman(string encodedFile, string treeFile, string outputFile)
     Node* root = deserializeTree(tin);
     tin.close();
 
-    // 3. Decode
     string decoded = "";
     int index = -1;
     while (index < (int)encoded.size() - 2) {
         decoded += CompressDecode(root, index, encoded);
     }
-
-    // 4. Save output
     ofstream out(outputFile);
     out << decoded;
     out.close();
@@ -224,24 +224,15 @@ void buildHuffmanTree(string text)
 	// do till there is more than one node in the queue
 	while (pq.size() != 1)
 	{
-		// Remove the two nodes of highest priority
-		// (lowest frequency) from the queue
 		Node *left = pq.top(); pq.pop();
 		Node *right = pq.top();	pq.pop();
 
-		// Create a new internal node with these two nodes
-		// as children and with frequency equal to the sum
-		// of the two nodes' frequencies. Add the new node
-		// to the priority queue.
 		int sum = left->freq + right->freq;
 		pq.push(makeNode(' ', sum, left, right));
 	}
 
-	// root stores pointer to root of Huffman Tree
 	Node* root = pq.top();
 
-	// traverse the Huffman Tree and store Huffman Codes
-	// in a map. Also prints them
 	unordered_map<char, string> huffmanCode;
 	CompressEncode(root, "", huffmanCode);
 
@@ -252,7 +243,6 @@ void buildHuffmanTree(string text)
 
 	cout << "nOriginal string was :n" << text << 'n';
 
-	// print encoded string
 	string str = "";
 	for (char ch: text) {
 		str += huffmanCode[ch];
@@ -260,8 +250,6 @@ void buildHuffmanTree(string text)
 
 	cout << "nEncoded string is :n" << str << 'n';
 
-	// traverse the Huffman Tree again and this time
-	// decode the encoded string
 	int index = -1;
 	cout << "nDecoded string is: n";
 	while (index < (int)str.size() - 2) {
